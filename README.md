@@ -1,35 +1,17 @@
-# 자율주행 데브코스 객체인식 프로젝트를 위한 C++ 주행 모듈 코드  
-Perception에 집중할 수 있도록 일부, 좌회전 우회전을 위한 주행 모듈 코드를 제공합니다.  
-팀마다 주행방식과 인지방식에 차이가 있을 수 있으므로, 나머지 모듈을 팀마다의 개성을 살려 개발하여야 합니다.  
+# YouOnlyLiveOnce
+### 역할
+- 인식: 안현석, 진창용
+- 제어: 형승호, 장명근
 
-### 좌회전 우회전 주행 원리
-`ros::Rate`와 한쪽 차선을 반대 차선의 위치(+-470)로 보정하는 기술을 사용  
-일정 시간동안 한쪽 차선만을 사용하여 주행시키도록 작성  
-```
-int sleep_rate = 12;    // 샘플링 시간 조절
-int time = 3;           // 일정 시간 조절
-int cnt = 0;            // 카운트 넘버 초기화
+### 클래스별 분포입니다.
+train [383, 150, 93, 100, 47, 50, 53, 77, 57, 48, 462, 597]
+eval [220, 26, 31, 32, 3, 3, 3, 4, 32, 0, 89, 345]
+뒤에 3개는 ignore 입니다.
 
-ros::Rate rate(sleep_rate);     // ros::rate 변수 생성
-max_cnt = static_cast<float>(sleep_rate) * time;    // 반복할 최대 반복 수 설정
+### Augmentation
+1. resize만 사용했습니다.
 
-while (static_cast<float>(cnt) < max_cnt) {
-    // ...
-
-    if (direction == "left") {
-            rpos = lpos + 470;
-        }
-        else if (direction == "right") {
-            lpos = rpos - 470;
-        }
-    
-    // drive topic Publish
-
-    cnt++;
-    rate.sleep();
-
-```
-### 주의 사항
-1. 자이카 마다 샘플링 Hz가 다를 수 있으므로 sleep_rate와 time를 적절히 조절해 max_cnt를 튜닝하는 작업이 필요합니다.  
-
-
+### tensorboard
+![Screenshot from 2023-01-19 18-51-42](https://user-images.githubusercontent.com/42567320/213411226-4e241cad-c571-4baa-bc8a-20ab2f431ff3.png)
+![Screenshot from 2023-01-19 18-51-52](https://user-images.githubusercontent.com/42567320/213411245-d16be4d7-3dd6-467a-9e18-d9afec2ef95e.png)
+![Screenshot from 2023-01-19 18-52-08](https://user-images.githubusercontent.com/42567320/213411261-8cad543a-5b72-4054-92f2-f95b4a63378d.png)
