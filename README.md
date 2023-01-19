@@ -16,8 +16,8 @@ eval [220, 26, 31, 32, 3, 3, 3, 4, 32, 0, 89, 345]
 1. Resize 640x480 -> 416x146 (전이학습을 위한 resize)
 
 ### 학습 모델 포팅 여부
-● onnx 변환
-○ trt 변환
+● onnx 변환  
+○ trt 변환  
 ○ xycar환경 inference
 
 ### tensorboard
