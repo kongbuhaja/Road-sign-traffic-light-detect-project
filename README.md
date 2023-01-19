@@ -4,10 +4,10 @@
 - 제어: 형승호, 장명근
 
 ### 데이터
-left/right/stop/crosswalk/traffic_light_green_up/traffic_light_green_down/traffic_light_red_up/traffic_light_red_down/traffic_light_yellow
-train [383, 150, 93, 100, 47, 50, 53, 77, 57, 48, 462, 597]  
-eval [220, 26, 31, 32, 3, 3, 3, 4, 32, 0, 89, 345]  
-뒤에 3개는 ignore 입니다.  
+- left/right/stop/crosswalk/traffic_light_green_up/traffic_light_green_down/traffic_light_red_up/traffic_light_red_down/traffic_light_yellow  
+- train [383, 150, 93, 100, 47, 50, 53, 77, 57, 48, 462, 597]  
+- eval [220, 26, 31, 32, 3, 3, 3, 4, 32, 0, 89, 345]  
+- ignore class 3개
 
 ### 데이터 수집방법
 자이카 카메라 활용
