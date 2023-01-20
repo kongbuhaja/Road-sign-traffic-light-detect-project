@@ -22,7 +22,7 @@ void HoughTransformLaneDetector::set(const YAML::Node &config) {
   roi_start_height_ = config["IMAGE"]["ROI_START_HEIGHT"].as<int>();
   roi_height_ = config["IMAGE"]["ROI_HEIGHT"].as<int>();
   sigma_gaussianblur_ = config["IMAGE"]["SIGMA_GAUSSIANBLUR"].as<int>();
-
+  
   canny_edge_low_threshold_ = config["CANNY"]["LOW_THRESHOLD"].as<int>();
   canny_edge_high_threshold_ = config["CANNY"]["HIGH_THRESHOLD"].as<int>();
 
@@ -30,6 +30,13 @@ void HoughTransformLaneDetector::set(const YAML::Node &config) {
   hough_threshold_ = config["HOUGH"]["THRESHOLD"].as<int>();
   hough_min_line_length_ = config["HOUGH"]["MIN_LINE_LENGTH"].as<int>();
   hough_max_line_gap_ = config["HOUGH"]["MAX_LINE_GAP"].as<int>();
+
+  stopline_roi_start_height_ = config["STOPLINE"]["STOPLINE_ROI_START_HIGHT"].as<int>();
+  stopline_roi_start_row_ = config["STOPLINE"]["STOPLINE_ROI_START_ROW"].as<int>();
+  stopline_roi_width_ = config["STOPLINE"]["STOPLINE_ROI_WIDTH"].as<int>();
+  stopline_roi_height_ = config["STOPLINE"]["STOPLINE_ROI_HEIGHT"].as<int>();
+  stopline_threshold_ = config["STOPLINE"]["STOPLINE_THRESHOLD"].as<int>();
+  stopline_slope_range_ = config["STOPLINE"]["STOPLINE_SLOPE_RANGE"].as<float>();
 
   debug_ = config["DEBUG"].as<bool>();
 }
@@ -259,5 +266,87 @@ void HoughTransformLaneDetector::draw_rectangles(int lpos,
                           kDebugRectangleEndHeight + roi_start_height_),
                 kCVBlack,
                 kDebugLineWidth);
+}
+
+bool HoughTransformLaneDetector::detectStopline(const cv::Mat &image) {
+  cv::Mat image_;
+  image.copyTo(image_);
+  cv::Mat roi = 
+    image_(cv::Rect(stopline_roi_start_row_,
+                    stopline_roi_start_height_,
+                    stopline_roi_width_,
+                    sotpline_roi_height_));
+  
+  cv::Mat gray_image;
+  cv::cvtColor(roi, gray_image, cv::COLOR_BGR2GRAY);
+
+  cv::equalizeHist(gray_image, gray_image);
+  cv::GaussianBlur(gray_image, gray_image, cv::Size(0, 0), sigma_gaussianblur_);
+  gray_image = gray_image + 
+    (gray_image - (int)cv::mean(gray_image)[0]);
+
+  cv::Mat canny_image;
+  cv::Canny(gray_image,
+            canny_image,
+            canny_edge_low_threshold_,
+            canny_edge_high_threshold_);
+
+  std::vector<cv::Vec4i> all_lines;
+  cv::HoughLinesP(roi,
+                  all_lines,
+                  kHoughRho,
+                  kHoughTheta,
+                  hough_threshold_,
+                  hough_min_line_length_,
+                  hough_max_line_gap_);
+
+  if (debug_) {
+    for (std::size_t i = 0; i < all_lines.size(); i++) {
+      cv::Vec4i line = all_lines[i];
+      cv::line(roi, cv::Point(line[0], line[1]), cv::Point(line[2], line[3]), 
+        cv::Scalar(0, 0, 255), 2, 8);
+    }
+    cv::imshow("Stopline Detect with HoughTransform", roi);
+  }
+
+  bool is_stopline = false;
+  if (all_lines.size() == 0) {
+    return is_stopline;
+  }
+
+  // Detect horizon line -> Stopline
+  int x1, y1, x2, y2;
+  float slope;
+
+  int count_horizonline = 0;
+  
+  for (int i = 0; i < lines_size; ++i) {
+    x1 = lines[i][kHoughIndex::x1], y1 = lines[i][kHoughIndex::y1];
+    x2 = lines[i][kHoughIndex::x2], y2 = lines[i][kHoughIndex::y2];
+    if (x2 - x1 == 0) {
+      slope = 0.0f;
+    } else {
+      slope = (float)(y2 - y1) / (x2 - x1);
+    }
+    if ((slope <= stopline_slope_range_) && (slope >= -1 * stopline_slope_range_)) {
+      count_horizonline++;
+    } 
+  }
+
+  if (count_horizonline > stopline_threshold_) {
+    is_stopline = ture;
+  }
+
+  if (debug_) {
+    if (is_stopline == true) {
+      cv::line(debug_frame_,
+              cv::Point(stopline_roi_start_row_, stopline_roi_start_height_ + stopline_roi_height_/2),
+              cv::Point(stopline_roi_start_row_ + stopline_roi_width_, stopline_roi_start_height_ + stopline_roi_height_/2),
+              cv::Scalar(0, 0, 255),
+              kDebugLineWidth);
+    }
+  }
+
+  return is_stopline;
 }
 }  // namespace xycar

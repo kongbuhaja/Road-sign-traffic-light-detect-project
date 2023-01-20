@@ -71,6 +71,15 @@ private:
   static const bool kLeftLane = true;
   static const bool kRightLane = false;
 
+  // Stopline
+  int stopline_roi_start_height_;
+  int stopline_roi_start_row_;
+  int stopline_roi_width_;
+  int stopline_roi_height_;
+  int stopline_threshold_;
+  float stopline_slope_range_;
+
+
   // Debug Image and flag
   cv::Mat debug_frame_;
   bool debug_;
