@@ -72,9 +72,9 @@ int HoughTransformLaneDetector::get_line_pos(
   float y, pos;
   if (m == 0.0 && b == 0.0) {
     if (direction == kLeftLane) {
-      pos = 0.0f;
+      pos = -1.0f;
     } else {
-      pos = (float)image_width_;
+      pos = -1.0f;
     }
   } else {
     y = (float)roi_height_ * 0.5;
