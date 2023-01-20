@@ -1,8 +1,14 @@
 <launch>
+    <!-- Lane Keeping System -->
     <node name="Lane_Keeping_System" pkg="lane_keeping_system" type="lane_keeping_system_node" output="screen"/>
     <param name="config_path" type="str" value="$(find lane_keeping_system)/config/config.yaml"/>
-    <include file="$(find xycar_lidar)/launch/lidar_noviewer.launch"/>
+    
+    <!-- Xycar Motor -->
     <include file="$(find xycar_motor)/launch/xycar_motor.launch"/>
+    
+    <!-- USB Cam -->
     <include file="$(find usb_cam)/launch/usb_cam-noviewer.launch"/>
-    <!-- <node name="rosbag" pkg="rosbag" type="play" args="$(find lane_keeping_system)/src/track.bag"/> -->
+
+    <!-- Yolo Module -->
+    <include file="$(find yolov3_trt_ros)/launch/yolov3_trt_ros_detection.launch"/>
 </launch>
