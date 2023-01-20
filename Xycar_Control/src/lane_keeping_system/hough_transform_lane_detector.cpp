@@ -149,6 +149,9 @@ std::pair<int, int> HoughTransformLaneDetector::getLanePosition(
                   hough_min_line_length_,
                   hough_max_line_gap_);
   if (all_lines.size() == 0) {
+    if (debug_) {
+      image.copyTo(debug_frame_);
+    }
     return std::pair<int, int>(0, 0);
   }
 
@@ -185,7 +188,7 @@ void HoughTransformLaneDetector::draw_lines(
     g = (float)std::rand() / RAND_MAX * std::numeric_limits<uint8_t>::max();
     b = (float)std::rand() / RAND_MAX * std::numeric_limits<uint8_t>::max();
     color = std::move(cv::Scalar(b, g, r));
-    cv::line(debug_frame_, pt1, pt2, color, kDebgLineWidth);
+    cv::line(debug_frame_, pt1, pt2, color, kDebugLineWidth);
   }
   for (int i = 0; i < right_line_index.size(); ++i) {
     pt1 = cv::Point2i(
@@ -199,7 +202,7 @@ void HoughTransformLaneDetector::draw_lines(
     g = (float)std::rand() / RAND_MAX * std::numeric_limits<uint8_t>::max();
     b = (float)std::rand() / RAND_MAX * std::numeric_limits<uint8_t>::max();
     color = std::move(cv::Scalar(b, g, r));
-    cv::line(debug_frame_, pt1, pt2, color, kDebgLineWidth);
+    cv::line(debug_frame_, pt1, pt2, color, kDebugLineWidth);
   }
 }
 
@@ -215,27 +218,27 @@ void HoughTransformLaneDetector::draw_rectangles(int lpos,
                 cv::Point(lpos + kDebugRectangleHalfWidth,
                           kDebugRectangleEndHeight + roi_start_height_),
                 kCVGreen,
-                kDebgLineWidth);
+                kDebugLineWidth);
   cv::rectangle(debug_frame_,
                 cv::Point(rpos - kDebugRectangleHalfWidth,
                           kDebugRectangleStartHeight + roi_start_height_),
                 cv::Point(rpos + kDebugRectangleHalfWidth,
                           kDebugRectangleEndHeight + roi_start_height_),
                 kCVGreen,
-                kDebgLineWidth);
+                kDebugLineWidth);
   cv::rectangle(debug_frame_,
                 cv::Point(ma_pos - kDebugRectangleHalfWidth,
                           kDebugRectangleStartHeight + roi_start_height_),
                 cv::Point(ma_pos + kDebugRectangleHalfWidth,
                           kDebugRectangleEndHeight + roi_start_height_),
                 kCVRed,
-                kDebgLineWidth);
+                kDebugLineWidth);
   cv::rectangle(debug_frame_,
                 cv::Point(image_width_ / 2 - kDebugRectangleHalfWidth,
                           kDebugRectangleStartHeight + roi_start_height_),
                 cv::Point(image_width_ / 2 + kDebugRectangleHalfWidth,
                           kDebugRectangleEndHeight + roi_start_height_),
                 kCVBlue,
-                kDebgLineWidth);
+                kDebugLineWidth);
 }
 }  // namespace xycar

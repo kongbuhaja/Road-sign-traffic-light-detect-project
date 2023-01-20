@@ -49,7 +49,7 @@ private:
   enum kHoughIndex { x1 = 0, y1, x2, y2 };
   static const double kHoughRho;
   static const double kHoughTheta;
-  static const int kDebgLineWidth = 2;
+  static const int kDebugLineWidth = 2;
   static const int kDebugRectangleHalfWidth = 5;
   static const int kDebugRectangleStartHeight = 15;
   static const int kDebugRectangleEndHeight = 25;
