@@ -21,12 +21,16 @@ void HoughTransformLaneDetector::set(const YAML::Node &config) {
   image_height_ = config["IMAGE"]["HEIGHT"].as<int>();
   roi_start_height_ = config["IMAGE"]["ROI_START_HEIGHT"].as<int>();
   roi_height_ = config["IMAGE"]["ROI_HEIGHT"].as<int>();
+  sigma_gaussianblur_ = config["IMAGE"]["SIGMA_GAUSSIANBLUR"].as<int>();
+
   canny_edge_low_threshold_ = config["CANNY"]["LOW_THRESHOLD"].as<int>();
   canny_edge_high_threshold_ = config["CANNY"]["HIGH_THRESHOLD"].as<int>();
+
   hough_line_slope_range_ = config["HOUGH"]["ABS_SLOPE_RANGE"].as<float>();
   hough_threshold_ = config["HOUGH"]["THRESHOLD"].as<int>();
   hough_min_line_length_ = config["HOUGH"]["MIN_LINE_LENGTH"].as<int>();
   hough_max_line_gap_ = config["HOUGH"]["MAX_LINE_GAP"].as<int>();
+
   debug_ = config["DEBUG"].as<bool>();
 }
 
@@ -130,16 +134,28 @@ HoughTransformLaneDetector::divideLines(const std::vector<cv::Vec4i> &lines) {
 
 std::pair<int, int> HoughTransformLaneDetector::getLanePosition(
   const cv::Mat &image) {
+  cv::Mat image_;
+  image.copyTo(image_);
+
+  cv::Mat roi = 
+    image_(cv::Rect(0, roi_start_height_, image_width_, roi_height_));
+  
   cv::Mat gray_image;
-  cv::cvtColor(image, gray_image, cv::COLOR_BGR2GRAY);
+  cv::cvtColor(roi, gray_image, cv::COLOR_BGR2GRAY);
+
+  // For Brightness Control
+  cv::equalizeHist(gray_image, gray_image);
+  cv::GaussianBlur(gray_image, gray_image, cv::Size(0, 0), sigma_gaussianblur_);
+  // Contrast up
+  gray_image = gray_image + 
+    (gray_image - (int)cv::mean(gray_image)[0]);
 
   cv::Mat canny_image;
   cv::Canny(gray_image,
             canny_image,
             canny_edge_low_threshold_,
             canny_edge_high_threshold_);
-  cv::Mat roi =
-    canny_image(cv::Rect(0, roi_start_height_, image_width_, roi_height_));
+
   std::vector<cv::Vec4i> all_lines;
   cv::HoughLinesP(roi,
                   all_lines,
@@ -148,11 +164,21 @@ std::pair<int, int> HoughTransformLaneDetector::getLanePosition(
                   hough_threshold_,
                   hough_min_line_length_,
                   hough_max_line_gap_);
+
+  if (debug_) {
+    for (std::size_t i = 0; i < all_lines.size(); i++) {
+      cv::Vec4i line = all_lines[i];
+      cv::line(roi, cv::Point(line[0], line[1]), cv::Point(line[2], line[3]), 
+        cv::Scalar(0, 0, 255), 2, 8);
+    }
+    cv::imshow("Left & Right Lane Detect with HoughTransform", roi);
+  }
+
   if (all_lines.size() == 0) {
     if (debug_) {
       image.copyTo(debug_frame_);
     }
-    return std::pair<int, int>(0, 0);
+    return std::pair<int, int>(-1, -1);
   }
 
   std::vector<int> left_line_index, right_line_index;

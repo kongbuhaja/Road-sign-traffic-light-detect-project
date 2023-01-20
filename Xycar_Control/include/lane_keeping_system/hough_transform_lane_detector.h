@@ -65,6 +65,7 @@ private:
   int image_height_;
   int roi_start_height_;
   int roi_height_;
+  int sigma_gaussianblur_;
 
   // line type falg
   static const bool kLeftLane = true;
