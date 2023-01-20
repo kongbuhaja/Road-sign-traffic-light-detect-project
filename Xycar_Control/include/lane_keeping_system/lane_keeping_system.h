@@ -17,6 +17,9 @@
 #include "lane_keeping_system/moving_average_filter.h"
 #include "lane_keeping_system/pid_controller.h"
 
+#include "yolov3_trt_ros/BoundingBox.h"
+#include "yolov3_trt_ros/BoundingBoxes.h"
+
 namespace xycar {
 
 class LaneKeepingSystem {
@@ -39,6 +42,9 @@ private:
 
   // Subcribe Image Topic
   void imageCallback(const sensor_msgs::Image &msg);
+
+  // Subscribe Yolo Topic
+  void yoloCallback(const yolov3_trt_ros::BoundingBoxes& msg);
 
 private:
   // Xycar Steering Angle Limit

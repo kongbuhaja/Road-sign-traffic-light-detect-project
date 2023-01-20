@@ -26,13 +26,16 @@ LaneKeepingSystem::LaneKeepingSystem() {
   setParams(config);
 
   pub_ = nh_.advertise<xycar_msgs::xycar_motor>(pub_topic_name_, queue_size_);
-  sub_ = nh_.subscribe(
-    sub_topic_name_, queue_size_, &LaneKeepingSystem::imageCallback, this);
+  sub_image_ = nh_.subscribe(
+    sub_image_topic_name_, queue_size_, &LaneKeepingSystem::imageCallback, this);
+  sub_yolo_ = nh_.subscribe(
+    sub_yolo_topic_name_, queue_size_, &LaneKeepingSystem::yoloCallback, this);
 }
 
 void LaneKeepingSystem::setParams(const YAML::Node &config) {
   pub_topic_name_ = config["TOPIC"]["PUB_NAME"].as<std::string>();
-  sub_topic_name_ = config["TOPIC"]["SUB_NAME"].as<std::string>();
+  sub_image_topic_name_ = config["TOPIC"]["SUB_IMAGE_NAME"].as<std::string>();
+  sub_yolo_topic_name_ = config["TOPIC"]["SUB_YOLO_NAME"].as<std::string>();
   queue_size_ = config["TOPIC"]["QUEUE_SIZE"].as<int>();
 
   xycar_speed_ = config["XYCAR"]["START_SPEED"].as<float>();
@@ -42,6 +45,7 @@ void LaneKeepingSystem::setParams(const YAML::Node &config) {
     config["XYCAR"]["SPEED_CONTROL_THRESHOLD"].as<float>();
   acceleration_step_ = config["XYCAR"]["ACCELERATION_STEP"].as<float>();
   deceleration_step_ = config["XYCAR"]["DECELERATION_STEP"].as<float>();
+
   debug_ = config["DEBUG"].as<bool>();
 }
 
@@ -92,6 +96,10 @@ void LaneKeepingSystem::imageCallback(const sensor_msgs::Image &msg) {
                         const_cast<uint8_t *>(&msg.data[0]),
                         msg.step);
   cv::cvtColor(src, frame_, cv::COLOR_RGB2BGR);
+}
+
+void LaneKeepingSystem::yoloCallback(const yolov3_trt_ros::BoundingBoxes& msg) {
+  
 }
 
 void LaneKeepingSystem::speed_control(float steering_angle) {
