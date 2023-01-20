@@ -7,7 +7,7 @@
     <include file="$(find xycar_motor)/launch/xycar_motor.launch"/>
     
     <!-- USB Cam -->
-    <include file="$(find usb_cam)/launch/usb_cam-noviewer.launch"/>
+    <!-- <include file="$(find usb_cam)/launch/usb_cam-noviewer.launch"/> -->
 
     <!-- Yolo Module -->
     <include file="$(find yolov3_trt_ros)/launch/yolov3_trt_ros_detection.launch"/>

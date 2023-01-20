@@ -47,8 +47,9 @@ void LaneKeepingSystem::setParams(const YAML::Node &config) {
   deceleration_step_ = config["XYCAR"]["DECELERATION_STEP"].as<float>();
   choose_lane_threshold_ = config["XYCAR"]["CHOOSE_LANE_THRESHOLD"].as<float>();
   error_multiplication_ = config["XYCAR"]["ERROR_MULTIPLICATION"].as<float>();
+  lane_distance_ = config["XYCAR"]["LANE_DISTANCE"].as<int>();
 
-  keep_stop_time_ = config["STOPLINE"]["KEEP_STOP_LINE"].as<float>();
+  keep_stop_time_ = config["STOPLINE"]["KEEP_STOP_TIME"].as<float>();
   ignore_stop_time_ = config["STOPLINE"]["IGNORE_STOP_TIME"].as<float>();
   
   reset_time_ = config["TRAFFICSIGN"]["RESET_TIME"].as<float>();
@@ -86,19 +87,18 @@ void LaneKeepingSystem::run() {
     // left or right turn
     if (is_left_sign_ == true ||
         steering_angle_ < -1 * choose_lane_threshold_) {
-      rpos = lpos + 470;
+      rpos = lpos + lane_distance_;
     }
     else if (is_right_sign_ == true ||
             steering_angle_ > choose_lane_threshold_) {
-      lpos = rpos + 470;
+      lpos = rpos - lane_distance_;
     }
 
     // Detect Stop line
     bool is_stopline = hough_transform_lane_detector_ptr_->detectStopline(frame_);
-    if (is_stopline == true) {
-      if (is_stop_sign_ == true || is_crosswalk_sign_ == true) {
-        is_stop_ = true;
-      }
+    if (is_stopline == true &&
+        (is_stop_sign_ == true || is_crosswalk_sign_ == true)) {
+      is_stop_ = true;
     }
     else {
       is_stop_ = false;
@@ -190,35 +190,29 @@ void LaneKeepingSystem::TrafficSignReset() {
 
 void LaneKeepingSystem::speed_control() {
   if (xycar_speed_ < xycar_max_speed_) {
-    xycar_speed_ += acceleration_step_;
+      xycar_speed_ += acceleration_step_;
   }
   if (is_stop_ == true) {
     if (is_stopping_ == false && is_stop_end_ == true) {
       stop_time_ = time_;
       is_stopping_ = true;
       is_stop_end_ = false;
-      xycar_speed_ -= deceleration_step_;
-      if (xycar_speed_ < 0) {
-        xycar_speed_ = 0.0;
-      }
+      xycar_speed_ = 0.0;
     }
-    if (is_stopping == true) {
-      if (time_ - stop_time_ > keep_stop_time_ &&
-          time_ - stop_time_ < ignore_stop_time_) {
-        is_stopping_ = false;
-      }
-      else {
-        xycar_speed_ -= deceleration_step_;
-        if (xycar_speed_ < 0) {
-          xycar_speed_ = 0.0;
-        }
-      }
+  }
+  if (is_stopping_ == true) {
+    if ((time_ - stop_time_ > keep_stop_time_) &&
+        (time_ - stop_time_ < keep_stop_time_ + ignore_stop_time_)) {
+      is_stopping_ = false;
     }
-    else if (is_stop_end_ == false) {
-      if (time_ - stop_time_ >= ignore_stop_time_) {
-        is_stop_end_ = true;
-        stop_time_ = time_;
-      }
+    else {
+      xycar_speed_ = 0.0;
+    }
+  }
+  else if (is_stop_end_ == false) {
+    if (time_ - stop_time_ >= keep_stop_time_ + ignore_stop_time_) {
+      is_stop_end_ = true;
+      stop_time_ = time_;
     }
   }
 }

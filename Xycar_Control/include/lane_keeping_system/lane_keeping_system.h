@@ -62,9 +62,11 @@ private:
   // ROS Variables
   ros::NodeHandle nh_;
   ros::Publisher pub_;
-  ros::Subscriber sub_;
+  ros::Subscriber sub_image_;
+  ros::Subscriber sub_yolo_;
   std::string pub_topic_name_;
-  std::string sub_topic_name_;
+  std::string sub_image_topic_name_;
+  std::string sub_yolo_topic_name_;
   int queue_size_;
   xycar_msgs::xycar_motor msg_;
 
@@ -81,6 +83,8 @@ private:
   float deceleration_step_;
   float choose_lane_threshold_;
   float error_multiplication_;
+  int lane_distance_;
+  
   // Previous Lane position
   int previous_lpos_ = 0;
   int previous_rpos_ = 640;

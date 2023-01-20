@@ -149,7 +149,7 @@ std::pair<int, int> HoughTransformLaneDetector::getLanePosition(
   
   cv::Mat gray_image;
   cv::cvtColor(roi, gray_image, cv::COLOR_BGR2GRAY);
-
+  
   // For Brightness Control
   cv::equalizeHist(gray_image, gray_image);
   cv::GaussianBlur(gray_image, gray_image, cv::Size(0, 0), sigma_gaussianblur_);
@@ -164,7 +164,7 @@ std::pair<int, int> HoughTransformLaneDetector::getLanePosition(
             canny_edge_high_threshold_);
 
   std::vector<cv::Vec4i> all_lines;
-  cv::HoughLinesP(roi,
+  cv::HoughLinesP(canny_image,
                   all_lines,
                   kHoughRho,
                   kHoughTheta,
@@ -275,7 +275,7 @@ bool HoughTransformLaneDetector::detectStopline(const cv::Mat &image) {
     image_(cv::Rect(stopline_roi_start_row_,
                     stopline_roi_start_height_,
                     stopline_roi_width_,
-                    sotpline_roi_height_));
+                    stopline_roi_height_));
   
   cv::Mat gray_image;
   cv::cvtColor(roi, gray_image, cv::COLOR_BGR2GRAY);
@@ -284,7 +284,8 @@ bool HoughTransformLaneDetector::detectStopline(const cv::Mat &image) {
   cv::GaussianBlur(gray_image, gray_image, cv::Size(0, 0), sigma_gaussianblur_);
   gray_image = gray_image + 
     (gray_image - (int)cv::mean(gray_image)[0]);
-
+  cv::threshold(gray_image, gray_image, 80, 0, cv::THRESH_BINARY);
+  cv::imshow("threshold", gray_image);
   cv::Mat canny_image;
   cv::Canny(gray_image,
             canny_image,
@@ -292,7 +293,7 @@ bool HoughTransformLaneDetector::detectStopline(const cv::Mat &image) {
             canny_edge_high_threshold_);
 
   std::vector<cv::Vec4i> all_lines;
-  cv::HoughLinesP(roi,
+  cv::HoughLinesP(canny_image,
                   all_lines,
                   kHoughRho,
                   kHoughTheta,
@@ -320,9 +321,9 @@ bool HoughTransformLaneDetector::detectStopline(const cv::Mat &image) {
 
   int count_horizonline = 0;
   
-  for (int i = 0; i < lines_size; ++i) {
-    x1 = lines[i][kHoughIndex::x1], y1 = lines[i][kHoughIndex::y1];
-    x2 = lines[i][kHoughIndex::x2], y2 = lines[i][kHoughIndex::y2];
+  for (int i = 0; i < all_lines.size(); ++i) {
+    x1 = all_lines[i][kHoughIndex::x1], y1 = all_lines[i][kHoughIndex::y1];
+    x2 = all_lines[i][kHoughIndex::x2], y2 = all_lines[i][kHoughIndex::y2];
     if (x2 - x1 == 0) {
       slope = 0.0f;
     } else {
@@ -334,7 +335,7 @@ bool HoughTransformLaneDetector::detectStopline(const cv::Mat &image) {
   }
 
   if (count_horizonline > stopline_threshold_) {
-    is_stopline = ture;
+    is_stopline = true;
   }
 
   if (debug_) {
