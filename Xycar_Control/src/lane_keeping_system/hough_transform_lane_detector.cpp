@@ -183,12 +183,8 @@ void HoughTransformLaneDetector::draw_lines(
     pt2 = cv::Point2i(
       lines[left_line_index[i]][kHoughIndex::x2],
       lines[left_line_index[i]][kHoughIndex::y2] + roi_start_height_);
-    int r, g, b;
-    r = (float)std::rand() / RAND_MAX * std::numeric_limits<uint8_t>::max();
-    g = (float)std::rand() / RAND_MAX * std::numeric_limits<uint8_t>::max();
-    b = (float)std::rand() / RAND_MAX * std::numeric_limits<uint8_t>::max();
-    color = std::move(cv::Scalar(b, g, r));
-    cv::line(debug_frame_, pt1, pt2, color, kDebugLineWidth);
+
+    cv::line(debug_frame_, pt1, pt2, cv::Scalar(255, 0, 0), kDebugLineWidth);
   }
   for (int i = 0; i < right_line_index.size(); ++i) {
     pt1 = cv::Point2i(
@@ -197,12 +193,8 @@ void HoughTransformLaneDetector::draw_lines(
     pt2 = cv::Point2i(
       lines[right_line_index[i]][kHoughIndex::x2],
       lines[right_line_index[i]][kHoughIndex::y2] + roi_start_height_);
-    int r, g, b;
-    r = (float)std::rand() / RAND_MAX * std::numeric_limits<uint8_t>::max();
-    g = (float)std::rand() / RAND_MAX * std::numeric_limits<uint8_t>::max();
-    b = (float)std::rand() / RAND_MAX * std::numeric_limits<uint8_t>::max();
-    color = std::move(cv::Scalar(b, g, r));
-    cv::line(debug_frame_, pt1, pt2, color, kDebugLineWidth);
+
+    cv::line(debug_frame_, pt1, pt2, cv::Scalar(0, 255, 0), kDebugLineWidth);
   }
 }
 
@@ -212,12 +204,13 @@ void HoughTransformLaneDetector::draw_rectangles(int lpos,
   static cv::Scalar kCVRed(0, 0, 255);
   static cv::Scalar kCVGreen(0, 255, 0);
   static cv::Scalar kCVBlue(255, 0, 0);
+  static cv::Scalar kCVBlack(0, 0, 0);
   cv::rectangle(debug_frame_,
                 cv::Point(lpos - kDebugRectangleHalfWidth,
                           kDebugRectangleStartHeight + roi_start_height_),
                 cv::Point(lpos + kDebugRectangleHalfWidth,
                           kDebugRectangleEndHeight + roi_start_height_),
-                kCVGreen,
+                kCVBlue,
                 kDebugLineWidth);
   cv::rectangle(debug_frame_,
                 cv::Point(rpos - kDebugRectangleHalfWidth,
@@ -238,7 +231,7 @@ void HoughTransformLaneDetector::draw_rectangles(int lpos,
                           kDebugRectangleStartHeight + roi_start_height_),
                 cv::Point(image_width_ / 2 + kDebugRectangleHalfWidth,
                           kDebugRectangleEndHeight + roi_start_height_),
-                kCVBlue,
+                kCVBlack,
                 kDebugLineWidth);
 }
 }  // namespace xycar
