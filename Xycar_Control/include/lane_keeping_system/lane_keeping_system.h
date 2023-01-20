@@ -1,9 +1,9 @@
 /**
  * @file lane_keeping_system.h
- * @author Jongrok Lee (lrrghdrh@naver.com)
+ * @author Seungho Hyeong (slkumquat@gmail.com)
  * @brief Lane Keeping System Class header file
- * @version 0.2
- * @date 2022-11-27
+ * @version 1.0
+ * @date 2023-01-19
  */
 #ifndef LANE_KEEPING_SYSTEM_H_
 #define LANE_KEEPING_SYSTEM_H_

@@ -1,9 +1,9 @@
 /**
  * @file hough_transform_lane_detector.h
- * @author Jongrok Lee (lrrghdrh@naver.com)
+ * @author Seungho Hyeong (slkumquat@gmail.com)
  * @brief Hough Transform Lane Detector class header file
- * @version 0.2
- * @date 2022-11-27
+ * @version 1.0
+ * @date 2023-01-19
  */
 #ifndef HOUGH_TRANSFORM_LANE_DETECTOR_H_
 #define HOUGH_TRANSFORM_LANE_DETECTOR_H_

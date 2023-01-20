@@ -1,9 +1,9 @@
 /**
  * @file pid_controller.cpp
- * @author Jongrok Lee (lrrghdrh@naver.com)
+ * @author Seungho Hyeong (slkumquat@gmail.com)
  * @brief PID Controller Class source file
- * @version 0.2
- * @date 2022-11-27
+ * @version 1.0
+ * @date 2023-01-19
  */
 #include "lane_keeping_system/pid_controller.h"
 namespace xycar {

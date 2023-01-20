@@ -1,9 +1,9 @@
 /**
  * @file hough_transform_lane_detector.cpp
- * @author Jongrok Lee (lrrghdrh@naver.com)
+ * @author Seungho Hyeong (slkumquat@gmail.com)
  * @brief hough transform lane detector class source file
- * @version 0.2
- * @date 2022-11-27
+ * @version 1.0
+ * @date 2023-01-19
  */
 #include "lane_keeping_system/hough_transform_lane_detector.h"
 

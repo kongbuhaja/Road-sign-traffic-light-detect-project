@@ -1,9 +1,9 @@
 /**
  * @file moving_average_filter.h
- * @author Jongrok Lee (lrrghdrh@naver.com)
+ * @author Seungho Hyeong (slkumquat@gmail.com)
  * @brief Moving Average Filter Class header file
- * @version 0.2
- * @date 2022-11-27
+ * @version 1.0
+ * @date 2023-01-19
  */
 #ifndef MOVING_AVERAGE_FILTER_H_
 #define MOVING_AVERAGE_FILTER_H_
