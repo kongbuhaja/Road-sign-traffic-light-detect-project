@@ -99,7 +99,27 @@ void LaneKeepingSystem::imageCallback(const sensor_msgs::Image &msg) {
 }
 
 void LaneKeepingSystem::yoloCallback(const yolov3_trt_ros::BoundingBoxes& msg) {
-  
+  for (auto& box : msg.bounding_boxes) {
+    switch(box.id) {
+      case 0:
+        is_left_sign = true;
+        break;
+      case 1:
+        is_right_sign = true;
+        break;
+      case 2:
+        is_stop_sign = true;
+        break;
+      case 3:
+        is_crosswalk_sign = true;
+        break;
+      case 5:
+        is_traffic_light = true;
+        break;
+      default:
+        std::cout << "Not a set option" << std::endl;
+    }
+  }
 }
 
 void LaneKeepingSystem::speed_control(float steering_angle) {

@@ -76,6 +76,18 @@ private:
   float acceleration_step_;
   float deceleration_step_;
 
+  // For Traffic sign
+  bool is_traffic_light = false;
+  bool is_red = false;
+  bool is_green = false;
+  bool is_yello = false;
+
+  // For Traffic sign
+  bool is_left_sign = false;
+  bool is_right_sign = false;
+  bool is_stop_sign = false;
+  bool is_crosswalk_sign = false;
+
   // Debug Flag
   bool debug_;
 };
