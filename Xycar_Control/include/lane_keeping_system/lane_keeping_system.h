@@ -46,6 +46,9 @@ private:
   // Subscribe Yolo Topic
   void yoloCallback(const yolov3_trt_ros::BoundingBoxes& msg);
 
+  // Reset Traffic sign
+  void TrafficSignReset();
+
 private:
   // Xycar Steering Angle Limit
   static const int kXycarSteeringAngleLimit = 50;
@@ -77,16 +80,20 @@ private:
   float deceleration_step_;
 
   // For Traffic sign
-  bool is_traffic_light = false;
-  bool is_red = false;
-  bool is_green = false;
-  bool is_yello = false;
+  bool is_traffic_light_ = false;
+  bool is_red_ = false;
+  bool is_green_ = false;
+  bool is_yello_ = false;
 
   // For Traffic sign
-  bool is_left_sign = false;
-  bool is_right_sign = false;
-  bool is_stop_sign = false;
-  bool is_crosswalk_sign = false;
+  bool is_left_sign_ = false;
+  bool is_right_sign_ = false;
+  bool is_stop_sign_ = false;
+  bool is_crosswalk_sign_ = false;
+
+  // For Traffic sign Reset
+  bool is_traffic_sign_reset_ = false;
+  double traffic_sign_reset_time_;
 
   // Debug Flag
   bool debug_;

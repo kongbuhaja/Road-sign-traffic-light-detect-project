@@ -46,6 +46,7 @@ void LaneKeepingSystem::setParams(const YAML::Node &config) {
   acceleration_step_ = config["XYCAR"]["ACCELERATION_STEP"].as<float>();
   deceleration_step_ = config["XYCAR"]["DECELERATION_STEP"].as<float>();
 
+  reset_time_ = config["TRAFFICSIGN"]["RESET_TIME"].as<float>();
   debug_ = config["DEBUG"].as<bool>();
 }
 
@@ -64,6 +65,7 @@ void LaneKeepingSystem::run() {
     if (frame_.empty()) {
       continue;
     }
+    double time = ros::Time::now().toSec();
 
     std::tie(lpos, rpos) =
       hough_transform_lane_detector_ptr_->getLanePosition(frame_);
@@ -77,6 +79,18 @@ void LaneKeepingSystem::run() {
 
     speed_control(steering_angle);
     drive(steering_angle);
+
+    // Reset Traffic sign
+    if (is_traffic_sign_reset_ == false) {
+      traffic_sign_reset_time_ = time;
+      is_traffic_sign_reset_ = true;
+    }
+    else {
+      if (time - traffic_sign_reset_time_ > reset_time_) {
+        TrafficSignReset();
+        traffic_sign_reset_time_ = time;
+      }
+    }
 
     if (debug_) {
       std::cout << "lpos: " << lpos << ", rpos: " << rpos << ", mpos: " << ma_mpos << std::endl;
@@ -102,24 +116,38 @@ void LaneKeepingSystem::yoloCallback(const yolov3_trt_ros::BoundingBoxes& msg) {
   for (auto& box : msg.bounding_boxes) {
     switch(box.id) {
       case 0:
-        is_left_sign = true;
+        is_left_sign_ = true;
         break;
       case 1:
-        is_right_sign = true;
+        is_right_sign_ = true;
         break;
       case 2:
-        is_stop_sign = true;
+        is_stop_sign_ = true;
         break;
       case 3:
-        is_crosswalk_sign = true;
+        is_crosswalk_sign_ = true;
         break;
       case 5:
-        is_traffic_light = true;
+        is_traffic_light_ = true;
         break;
       default:
         std::cout << "Not a set option" << std::endl;
     }
   }
+}
+
+void LaneKeepingSystem::TrafficSignReset() {
+  // Traffic light
+  is_traffic_light_ = false;
+  is_red_ = false;
+  is_green_ = false;
+  is_yello_ = false;
+
+  // Traffic sign
+  is_left_sign_ = false;
+  is_right_sign_ = false;
+  is_stop_sign_ = false;
+  is_crosswalk_sign_ = false;
 }
 
 void LaneKeepingSystem::speed_control(float steering_angle) {
