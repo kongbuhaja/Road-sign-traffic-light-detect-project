@@ -35,7 +35,7 @@ public:
 
 private:
   // Setting steering angle and speed
-  void speed_control(float steering_angle);
+  void speed_control();
 
   // Puslish Xycar Moter Message
   void drive(float steering_angle);
@@ -72,12 +72,27 @@ private:
   cv::Mat frame_;
 
   // Xycar Device variables
+  float steering_angle_ = 0;
   float xycar_speed_;
   float xycar_max_speed_;
   float xycar_min_speed_;
   float xycar_speed_control_threshold_;
   float acceleration_step_;
   float deceleration_step_;
+  float choose_lane_threshold_;
+  float error_multiplication_;
+  // Previous Lane position
+  int previous_lpos_ = 0;
+  int previous_rpos_ = 640;
+
+  // For Stop line
+  double time_;
+  double stop_time_;
+  bool is_stop_ = false;
+  bool is_stopping_ = false;
+  bool is_stop_end_ = true;
+  float keep_stop_time_;
+  float ignore_stop_time_;
 
   // For Traffic sign
   bool is_traffic_light_ = false;
@@ -94,6 +109,7 @@ private:
   // For Traffic sign Reset
   bool is_traffic_sign_reset_ = false;
   double traffic_sign_reset_time_;
+  float reset_time_;
 
   // Debug Flag
   bool debug_;

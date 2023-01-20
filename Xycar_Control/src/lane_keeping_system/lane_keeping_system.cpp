@@ -45,8 +45,14 @@ void LaneKeepingSystem::setParams(const YAML::Node &config) {
     config["XYCAR"]["SPEED_CONTROL_THRESHOLD"].as<float>();
   acceleration_step_ = config["XYCAR"]["ACCELERATION_STEP"].as<float>();
   deceleration_step_ = config["XYCAR"]["DECELERATION_STEP"].as<float>();
+  choose_lane_threshold_ = config["XYCAR"]["CHOOSE_LANE_THRESHOLD"].as<float>();
+  error_multiplication_ = config["XYCAR"]["ERROR_MULTIPLICATION"].as<float>();
 
+  keep_stop_time_ = config["STOPLINE"]["KEEP_STOP_LINE"].as<float>();
+  ignore_stop_time_ = config["STOPLINE"]["IGNORE_STOP_TIME"].as<float>();
+  
   reset_time_ = config["TRAFFICSIGN"]["RESET_TIME"].as<float>();
+  
   debug_ = config["DEBUG"].as<bool>();
 }
 
@@ -58,37 +64,69 @@ LaneKeepingSystem::~LaneKeepingSystem() {
 
 void LaneKeepingSystem::run() {
   int lpos, rpos, error, ma_mpos;
-  float steering_angle;
   ros::Rate rate(30);
   while (ros::ok()) {
     ros::spinOnce();
     if (frame_.empty()) {
       continue;
     }
-    double time = ros::Time::now().toSec();
+    time_ = ros::Time::now().toSec();
 
     std::tie(lpos, rpos) =
       hough_transform_lane_detector_ptr_->getLanePosition(frame_);
+    
+    // Don't see lane
+    if (lpos == -1) {
+      lpos = previous_lpos_;
+    }
+    if (rpos == -1) {
+      rpos = previous_rpos_;
+    }
+
+    // left or right turn
+    if (is_left_sign_ == true ||
+        steering_angle_ < -1 * choose_lane_threshold_) {
+      rpos = lpos + 470;
+    }
+    else if (is_right_sign_ == true ||
+            steering_angle_ > choose_lane_threshold_) {
+      lpos = rpos + 470;
+    }
+
+    // Detect Stop line
+    bool is_stopline = hough_transform_lane_detector_ptr_->detectStopline(frame_);
+    if (is_stopline == true) {
+      if (is_stop_sign_ == true || is_crosswalk_sign_ == true) {
+        is_stop_ = true;
+      }
+    }
+    else {
+      is_stop_ = false;
+    }
 
     ma_filter_ptr_->addSample((lpos + rpos) / 2);
     ma_mpos = ma_filter_ptr_->getWeightedMovingAverage();
     error = ma_mpos - frame_.cols / 2;
-    steering_angle = std::max(-(float)kXycarSteeringAngleLimit,
-                              std::min(pid_ptr_->getControlOutput(error),
+    steering_angle_ = std::max(-(float)kXycarSteeringAngleLimit,
+                              std::min(pid_ptr_->getControlOutput(error * error_multiplication_),
                                        (float)kXycarSteeringAngleLimit));
 
-    speed_control(steering_angle);
-    drive(steering_angle);
+    speed_control();
+    drive(steering_angle_);
+    
+    // Save previous lane position
+    previous_lpos_ = lpos;
+    previous_rpos_ = rpos;
 
     // Reset Traffic sign
     if (is_traffic_sign_reset_ == false) {
-      traffic_sign_reset_time_ = time;
+      traffic_sign_reset_time_ = time_;
       is_traffic_sign_reset_ = true;
     }
     else {
-      if (time - traffic_sign_reset_time_ > reset_time_) {
+      if (time_ - traffic_sign_reset_time_ > reset_time_) {
         TrafficSignReset();
-        traffic_sign_reset_time_ = time;
+        traffic_sign_reset_time_ = time_;
       }
     }
 
@@ -150,13 +188,38 @@ void LaneKeepingSystem::TrafficSignReset() {
   is_crosswalk_sign_ = false;
 }
 
-void LaneKeepingSystem::speed_control(float steering_angle) {
-  if (std::abs(steering_angle) > xycar_speed_control_threshold_) {
-    xycar_speed_ -= deceleration_step_;
-    xycar_speed_ = std::max(xycar_speed_, xycar_min_speed_);
-  } else {
+void LaneKeepingSystem::speed_control() {
+  if (xycar_speed_ < xycar_max_speed_) {
     xycar_speed_ += acceleration_step_;
-    xycar_speed_ = std::min(xycar_speed_, xycar_max_speed_);
+  }
+  if (is_stop_ == true) {
+    if (is_stopping_ == false && is_stop_end_ == true) {
+      stop_time_ = time_;
+      is_stopping_ = true;
+      is_stop_end_ = false;
+      xycar_speed_ -= deceleration_step_;
+      if (xycar_speed_ < 0) {
+        xycar_speed_ = 0.0;
+      }
+    }
+    if (is_stopping == true) {
+      if (time_ - stop_time_ > keep_stop_time_ &&
+          time_ - stop_time_ < ignore_stop_time_) {
+        is_stopping_ = false;
+      }
+      else {
+        xycar_speed_ -= deceleration_step_;
+        if (xycar_speed_ < 0) {
+          xycar_speed_ = 0.0;
+        }
+      }
+    }
+    else if (is_stop_end_ == false) {
+      if (time_ - stop_time_ >= ignore_stop_time_) {
+        is_stop_end_ = true;
+        stop_time_ = time_;
+      }
+    }
   }
 }
 
