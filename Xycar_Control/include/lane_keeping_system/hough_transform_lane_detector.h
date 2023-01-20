@@ -22,6 +22,8 @@ public:
   std::pair<int, int> getLanePosition(const cv::Mat &image);
   // Draw rectagles on debug image
   void draw_rectangles(int lpos, int rpos, int ma_mpos);
+  // Detect Stopline
+  bool detectStopline(const cv::Mat &image);
 
   // Get debug image
   cv::Mat *getDebugFrame();
