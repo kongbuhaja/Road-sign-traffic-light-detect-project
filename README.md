@@ -1,35 +1,130 @@
-# YouOnlyLiveOnce
-### 역할 분담
-- 인식: 안현석, 진창용
-- 제어: 형승호, 장명근
-
-### 데이터
-- left/right/stop/crosswalk/traffic_light_green_up/traffic_light_green_down/traffic_light_red_up/traffic_light_red_down/traffic_light_yellow  
-- train [383, 150, 93, 100, 47, 50, 53, 77, 57, 48, 462, 597]  
-- eval [220, 26, 31, 32, 3, 3, 3, 4, 32, 0, 89, 345]  
-- ignore class 3개
-
-### 데이터 수집방법
-자이카 카메라 활용
-
-### Augmentation
-- Resize 640x480 -> 416x146 (전이학습을 위한 resize)
-
-### 학습 모델 포팅 여부
-● onnx 변환  
-○ trt 변환  
-○ xycar환경 inference
-
-### tensorboard
-![Screenshot from 2023-01-19 18-51-42](https://user-images.githubusercontent.com/42567320/213411226-4e241cad-c571-4baa-bc8a-20ab2f431ff3.png)
-![Screenshot from 2023-01-19 18-51-52](https://user-images.githubusercontent.com/42567320/213411245-d16be4d7-3dd6-467a-9e18-d9afec2ef95e.png)
-![Screenshot from 2023-01-19 18-52-08](https://user-images.githubusercontent.com/42567320/213411261-8cad543a-5b72-4054-92f2-f95b4a63378d.png)
-
-### 추가 적용 사항
-- kmeans-clustering 구현 후 데이터에 적용하여 anchor box 추출
-
-### 개선할 점
-- 아직까지 쓸만한 학습결과가 나오지 않음
-
-### 핑계
-- 학습된 모델을 실수 날려 재학습 하는중입니다...
+{
+ "cells": [
+  {
+   "attachments": {},
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Programers-devcourse 자율주행\n",
+    "# - YOLO기반 표지판 검출 및 차선인식 주행 프로젝트  \n",
+    "\n",
+    "## Team5 YouOnlyLiveOnce\n",
+    "## 프로젝트 rule\n",
+    "- 기본적으로 차선 유지 주행\n",
+    "- 갈림길 시 road sign 판단후 주행\n",
+    "- 정지선 + stop, crosswalk sign 시 5초 정지\n",
+    "- 정지선 + red traffic light 시 계속 정지\n",
+    "\n",
+    "### 역할 분담\n",
+    "- 안현석: YOLO 학습, 데이터 수집, Labeling\n",
+    "- 진창용: 데이터 수집, Labeling, 모델 변환\n",
+    "- 형승호: Hough transform기반 차선인식\n",
+    "- 장명근: 신호등 분류\n",
+    "\n",
+    "### 개발 환경\n",
+    "- xycar: Jetson tx2 보드 사용\n",
+    "- training: AWS server, 개인 PC\n",
+    "- YOLO: Python, Pytorch\n",
+    "- 주행, 제어, postprocessing: ROS, C++\n",
+    "\n",
+    "### YOLO\n",
+    "- Jetson tx2 보드 사용으로 YOLOv3-tiny 모델 사용\n",
+    "- server, pc에서 학습후 xycar에 모델 탑재\n",
+    "- pth file -> onnx -> trt\n",
+    "- 기본적인 강의에서 제공되는 가이드라인 코드 기반 학습\n",
+    "- Darknet에서 제공되는 weight기반 전이학습\n",
+    "\n",
+    "### 데이터\n",
+    "- Labeling class: Left, Right, Stop, Crosswalk, ~~Uturn~~, Traffic_light  \n",
+    "- train data objects: [767, 583, 271, 284, ~~23~~, 268]  \n",
+    "- eval data objects: [79, 46, 42, 75, ~~0~~, 62]   \n",
+    "- 알아볼 수 없거나, 특정 크기 이하의 object는 masking처리하여 사용  \n",
+    "- Uturn은 예방차원에서 오검출을 방지하기위해 학습하였으며, 실제 환경에서는 미사용\n",
+    "- Left sign  \n",
+    "![left](https://user-images.githubusercontent.com/42567320/215160123-76c039d4-3ebb-41cb-a5da-c167fa74ff71.png)\n",
+    "\n",
+    "- Right sign  \n",
+    "![right](https://user-images.githubusercontent.com/42567320/215160139-0e901690-72b8-41a5-8b06-e89b47acccc4.png)\n",
+    "\n",
+    "- Stop sign  \n",
+    "![stop](https://user-images.githubusercontent.com/42567320/215160166-0289b56f-b245-4d65-a0d2-ade6162c8e47.png)\n",
+    "\n",
+    "- Crosswalk sign  \n",
+    "![crosswalk](https://user-images.githubusercontent.com/42567320/215160219-b6f91f9b-95b8-4e37-b521-284584e2547c.png)\n",
+    "\n",
+    "- ~~Uturn sign~~  \n",
+    "![uturn](https://user-images.githubusercontent.com/42567320/215160241-20824526-6971-417d-9cfb-fc4af4080829.png)\n",
+    "\n",
+    "- Traffic_light  \n",
+    "![trafic](https://user-images.githubusercontent.com/42567320/215160258-60707c09-f568-4c56-a6a9-d4e75a14a182.png)\n",
+    "\n",
+    "\n",
+    "### 데이터 수집  \n",
+    "- 수집: xycar 카메라 활용  \n",
+    "\n",
+    "### Augmentation  \n",
+    "**imgaug 라이브러리 활용**  \n",
+    "- Sharpen: 0.0 ~ 0.1  \n",
+    "- Affine: translate(-0.1 ~ 0.1), rotate(-3 ~ 3), scale(1.0, 1.5)  \n",
+    "- Trans_brightness: 0.8 ~ 0.95  \n",
+    "- Horizontal_flip  \n",
+    "\n",
+    "### 추가 적용\n",
+    "- masking: 데이터중 필요없거나, 특정 크기 이하의 object masking  \n",
+    "- make_all: image, annotation file 확인 후 이상없거나, object존재 시 all.txt에 리스트 화   \n",
+    "- count_object: dataset중 object별 전체 수를 count  \n",
+    "- kmeans: masking 처리후 object의 크기를 기반으로 kmeans clustering기법을 통해 anchor 추출  \n",
+    "- image_show: labeling 결과 확인  \n",
+    "\n",
+    "\n",
+    "### 학습 결과\n",
+    "![evaluation](https://user-images.githubusercontent.com/42567320/215160737-7ac445b2-d397-4769-8892-e00396903fb9.png)\n",
+    "![tensorboard](https://user-images.githubusercontent.com/42567320/215160297-05a0b4e5-a69b-4125-8534-ca884e95c5f3.png)\n",
+    "\n",
+    "\n",
+    "### 신호등 분류\n",
+    "- 검출된 신호등 ROI의 mid, mid - offset, mid + offset의 3개의 colume의 sample 추출  \n",
+    "- 추출된 sample의 RGB값을 분석하여 각 sample이 대표하는 색을 확인하고 voting방식 판단  \n",
+    "\n",
+    "### 신호등 분류 탈락 알고리즘\n",
+    "- 검출된 신호등 ROI를 hough circle을 통해 원검출 후 해당 원 내부의 색 판단  \n",
+    "  -> 원 검출의 비정확성과, 과도한 연산량으로 탈락 \n",
+    "- 검출된 신호등 ROI를 특정 threshold 값 이상만 masking하고 해당 픽셀의 위치를 평균내어 검출한 원의 RGB값 분석으로 색상판단  \n",
+    "  -> 필요한 정확도는 나오나, 채택한 알고리즘 대비 연산량이 많아 탈락\n",
+    "\n",
+    "\n",
+    "### 차선 인식\n",
+    "- hough transform기반 Lane Keeping System 적용\n",
+    "\n",
+    "### 최종결과\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "torch",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.15"
+  },
+  "orig_nbformat": 4,
+  "vscode": {
+   "interpreter": {
+    "hash": "0ce55004f38b1b27f6c43918929aff2a2ab430c03d469cbf920c0e9bac4df1a0"
+   }
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

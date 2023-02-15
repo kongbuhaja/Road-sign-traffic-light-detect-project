@@ -1,0 +1,12 @@
+left
+right
+stop
+crosswalk
+uturn
+trafic_light_green_up
+trafic_light_green_down
+trafic_light_red_up
+trafic_light_red_down
+traffic_light_yellow
+traffic_light_off
+ignore_unne
