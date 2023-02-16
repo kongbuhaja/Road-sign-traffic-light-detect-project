@@ -3,16 +3,16 @@
 
 ## Team5 YouOnlyLiveOnce
 ## 프로젝트 rule
-- 기본적으로 차선 유지 주행
-- 갈림길 시 road sign 판단후 주행
-- 정지선 + stop, crosswalk sign 시 5초 정지
-- 정지선 + red traffic light 시 계속 정지
+- 차선 유지 주행
+- 갈림길 시 road sign(left or right) 판단 후 주행
+- 정지선 + stop, crosswalk sign 시 5초 정지 후 출발
+- 정지선 + red light 에서 정지 후 green light 변경 시 출발
 
 ### 역할 분담
 - 안현석: YOLO 학습, 데이터 수집, Labeling
 - 진창용: 데이터 수집, Labeling, 모델 변환
-- 형승호: Hough transform기반 차선인식
-- 장명근: 신호등 분류
+- 형승호: Hough transform기반 차선인식, 인식된 표지판을 사용하여 주행 전략 및 주행 제어 구현
+- 장명근: Hough circle을 사용한 신호등 색 인식 
 
 ### 개발 환경
 - xycar: Jetson tx2 보드 사용
