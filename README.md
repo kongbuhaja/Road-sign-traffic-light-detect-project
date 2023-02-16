@@ -79,7 +79,7 @@
 
 ## 제어 알고리즘
 - ROS Node
-![ROS Node image](https://github.com/prgrms-ad-devcourse/ad-4-object-detection-project/blob/YouOnlyLiveOnce/Xycar_Control/Result%20Image/ROS%20Node.PNG)
+- ![ROS Node image](https://github.com/prgrms-ad-devcourse/ad-4-object-detection-project/blob/YouOnlyLiveOnce/Xycar_Control/Result%20Image/ROS%20Node.PNG)
 - flowchart 방식으로 표현 (todo)
 
 ## 신호등 색 분류 방법
