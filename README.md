@@ -1,7 +1,6 @@
-# Programers-devcourse 자율주행
-# - YOLO기반 표지판 검출 및 차선인식 주행 프로젝트  
+# [최종제출] 객체인식 모의 경진대회 YouOnlyLiveOnce팀
+## - YOLO기반 표지판 검출 및 차선인식 주행 프로젝트  
 
-## Team5 YouOnlyLiveOnce
 ## 프로젝트 rule
 - 차선 유지 주행
 - 갈림길 시 road sign(left or right) 판단 후 주행
