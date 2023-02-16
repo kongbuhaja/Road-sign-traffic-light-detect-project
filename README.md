@@ -78,19 +78,23 @@
 ![evaluation](https://user-images.githubusercontent.com/42567320/215160737-7ac445b2-d397-4769-8892-e00396903fb9.png)
 ![tensorboard](https://user-images.githubusercontent.com/42567320/215160297-05a0b4e5-a69b-4125-8534-ca884e95c5f3.png)
 
+## 제어 알고리즘
+- flowchart 방식으로 표현 (todo)
 
-### 신호등 분류
+## 신호등 색 분류 방법
+### 신호등 분류 알고리즘
 - 검출된 신호등 ROI의 mid, mid - offset, mid + offset의 3개의 colume의 sample 추출  
 - 추출된 sample의 RGB값을 분석하여 각 sample이 대표하는 색을 확인하고 voting방식 판단  
+- 결과 이미지 추가 (todo)
 
-### 신호등 분류 탈락 알고리즘
+### 신호등 분류 알고리즘 (시행착오)
 - 검출된 신호등 ROI를 hough circle을 통해 원검출 후 해당 원 내부의 색 판단  
   -> 원 검출의 비정확성과, 과도한 연산량으로 탈락 
 - 검출된 신호등 ROI를 특정 threshold 값 이상만 masking하고 해당 픽셀의 위치를 평균내어 검출한 원의 RGB값 분석으로 색상판단  
   -> 요구 정확도는 나오나, 채택한 알고리즘 대비 연산량이 많아 탈락
 
-
-### 차선 인식
-- hough transform기반 Lane Keeping System 적용
+## **✅ 어려웠던 부분 & 개선 방법**
+## **✅ 잘 되었던 부분**
 
 ### 최종결과
+ - gif로 만들어 추가 (todo)
