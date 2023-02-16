@@ -78,6 +78,8 @@
 ![tensorboard](https://user-images.githubusercontent.com/42567320/215160297-05a0b4e5-a69b-4125-8534-ca884e95c5f3.png)
 
 ## 제어 알고리즘
+- ROS Node
+![ROS Node image](https://github.com/prgrms-ad-devcourse/ad-4-object-detection-project/blob/YouOnlyLiveOnce/Xycar_Control/Result%20Image/ROS%20Node.PNG)
 - flowchart 방식으로 표현 (todo)
 
 ## 신호등 색 분류 방법
