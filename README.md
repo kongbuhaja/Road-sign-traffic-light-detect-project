@@ -56,7 +56,7 @@
 ### 데이터 수집 방법
 - xycar에 장착된 카메라(ELP 2MP OV2710 CMOS) 사용
 - 640 * 480 크기의 이미지를 학습에 사용
-- "https://github.com/developer0hye/Yolo_Label"을 사용하여 라벨링 
+- "https://github.com/developer0hye/Yolo_Label" 을 사용하여 라벨링 
 
 ### 사용한 어그멘테이션  
   **imgaug 라이브러리 활용**  
