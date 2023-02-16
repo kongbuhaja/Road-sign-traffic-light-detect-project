@@ -50,7 +50,7 @@
 - ~~Uturn sign~~  
 ![uturn](https://user-images.githubusercontent.com/42567320/215160241-20824526-6971-417d-9cfb-fc4af4080829.png)
 
-- Traffic_light  
+- Traffic light  
 ![trafic](https://user-images.githubusercontent.com/42567320/215160258-60707c09-f568-4c56-a6a9-d4e75a14a182.png)
 
 
