@@ -60,11 +60,11 @@
 - "https://github.com/developer0hye/Yolo_Label"을 사용하여 라벨링 
 
 ### Augmentation  
-**imgaug 라이브러리 활용**  
-- Sharpen: 0.0 ~ 0.1  
-- Affine: translate(-0.1 ~ 0.1), rotate(-3 ~ 3), scale(1.0, 1.5)  
-- Trans_brightness: 0.8 ~ 0.95  
-- Horizontal_flip  
+  **imgaug 라이브러리 활용**  
+    - Sharpen: 0.0 ~ 0.1  
+    - Affine: translate(-0.1 ~ 0.1), rotate(-3 ~ 3), scale(1.0, 1.5)  
+    - Trans_brightness: 0.8 ~ 0.95  
+    - Horizontal_flip  
 
 ### 추가 적용
 - masking: 데이터중 필요없거나, 특정 크기 이하의 object masking  
