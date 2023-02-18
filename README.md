@@ -113,7 +113,12 @@
   -> 요구 정확도는 나오나, 채택한 알고리즘 대비 연산량이 많아 탈락
 
 ### 최종결과
- - gif로 만들어 추가 (todo)
+ - 좌회전 표지판을 인식하여 갈림길에서 좌회전하는 장면
+ 
  ![Left Turn](https://github.com/prgrms-ad-devcourse/ad-4-object-detection-project/blob/YouOnlyLiveOnce/Xycar_Control/Result%20Image/Left%20turn.gif)
+ 
+ - 정지 표지판을 인식하여 정지선에서 멈추는 장면
  ![Stop sign](https://github.com/prgrms-ad-devcourse/ad-4-object-detection-project/blob/YouOnlyLiveOnce/Xycar_Control/Result%20Image/Stop%20Sign.gif)
+ 
+ - 신호등을 인식하고, 빨간불에서는 정지하고 초록불에서 출발하는 장면
  ![Traffic Sign](https://github.com/prgrms-ad-devcourse/ad-4-object-detection-project/blob/YouOnlyLiveOnce/Xycar_Control/Result%20Image/Traffic%20light.gif)
