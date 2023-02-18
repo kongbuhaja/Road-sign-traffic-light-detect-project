@@ -118,10 +118,12 @@
  - 검은색 네모 박스는 이미지의 중심, 빨간 네모 박스는 조향각이 크기를 의미함.
  - 좌회전 표지판을 인식하여 갈림길에서 좌회전하는 장면
  
- ![Left Turn](https://github.com/prgrms-ad-devcourse/ad-4-object-detection-project/blob/YouOnlyLiveOnce/Xycar_Control/Result%20Image/Left%20turn.gif){: width="320 height="240
+ ![Left Turn](https://github.com/prgrms-ad-devcourse/ad-4-object-detection-project/blob/YouOnlyLiveOnce/Xycar_Control/Result%20Image/Left%20turn.gif)
  
  - 정지 표지판을 인식하여 정지선에서 멈추는 장면
- ![Stop sign](https://github.com/prgrms-ad-devcourse/ad-4-object-detection-project/blob/YouOnlyLiveOnce/Xycar_Control/Result%20Image/Stop%20Sign.gif){: width="320 height="240
+ 
+ ![Stop sign](https://github.com/prgrms-ad-devcourse/ad-4-object-detection-project/blob/YouOnlyLiveOnce/Xycar_Control/Result%20Image/Stop%20Sign.gif)
  
  - 신호등을 인식하고, 빨간불에서는 정지하고 초록불에서 출발하는 장면
- ![Traffic Sign](https://github.com/prgrms-ad-devcourse/ad-4-object-detection-project/blob/YouOnlyLiveOnce/Xycar_Control/Result%20Image/Traffic%20light.gif){: width="320" height="240"}
+ 
+ ![Traffic Sign](https://github.com/prgrms-ad-devcourse/ad-4-object-detection-project/blob/YouOnlyLiveOnce/Xycar_Control/Result%20Image/Traffic%20light.gif)
